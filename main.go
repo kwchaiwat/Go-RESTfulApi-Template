@@ -7,6 +7,7 @@ import (
 	"go-restful-api-template/services"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -66,6 +67,8 @@ func initConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	err := viper.ReadInConfig()
 	if err != nil {

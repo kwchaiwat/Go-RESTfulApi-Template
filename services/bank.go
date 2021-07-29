@@ -4,18 +4,18 @@ import (
 	"database/sql"
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
-	"go-restful-api-template/models"
+	"go-restful-api-template/repositories"
 )
 
 type bankService struct {
-	bankRepo models.BankRepository
+	bankRepo repositories.BankRepository
 }
 
-func NewBankService(bankRepo models.BankRepository) bankService {
+func NewBankService(bankRepo repositories.BankRepository) bankService {
 	return bankService{bankRepo: bankRepo}
 }
 
-func (s *bankService) GetBanks() ([]models.Bank, error) {
+func (s *bankService) GetBanks() ([]repositories.Bank, error) {
 	banks, err := s.bankRepo.GetAll()
 	if err != nil {
 		logs.Error(err)
@@ -24,7 +24,7 @@ func (s *bankService) GetBanks() ([]models.Bank, error) {
 	return banks, nil
 }
 
-func (s *bankService) GetBank(id int) (*models.Bank, error) {
+func (s *bankService) GetBank(id int) (*repositories.Bank, error) {
 	bank, err := s.bankRepo.GetById(id)
 	if err != nil {
 		if err == sql.ErrNoRows {

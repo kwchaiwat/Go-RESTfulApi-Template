@@ -1,4 +1,4 @@
-package models
+package repositories
 
 type Bank struct {
 	Id             int     `db:"id"`

@@ -1,8 +1,8 @@
 package services
 
-import "go-restful-api-template/models"
+import "go-restful-api-template/repositories"
 
 type BankService interface {
-	GetBanks() ([]models.Bank, error)
-	GetBank(id int) (*models.Bank, error)
+	GetBanks() ([]repositories.Bank, error)
+	GetBank(id int) (*repositories.Bank, error)
 }

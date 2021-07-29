@@ -2,15 +2,15 @@ package repositories
 
 import (
 	"errors"
-	"go-restful-api-template/models"
+	"go-restful-api-template/repositories"
 )
 
 type BankRepositoryMock struct {
-	banks []models.Bank
+	banks []repositories.Bank
 }
 
 func NewBankRepositoryMock() BankRepositoryMock {
-	banks := []models.Bank{
+	banks := []repositories.Bank{
 		{Id: 1001, AccountNumber: "Mock-1", Trust: 111.99, TransactionFee: 10},
 		{Id: 1002, AccountNumber: "Mock-2", Trust: 222.99, TransactionFee: 20},
 		{Id: 1003, AccountNumber: "Mock-3", Trust: 333.99, TransactionFee: 30},
@@ -20,11 +20,11 @@ func NewBankRepositoryMock() BankRepositoryMock {
 	return BankRepositoryMock{banks: banks}
 }
 
-func (r BankRepositoryMock) GetAll() ([]models.Bank, error) {
+func (r BankRepositoryMock) GetAll() ([]repositories.Bank, error) {
 	return r.banks, nil
 }
 
-func (r BankRepositoryMock) GetById(id int) (*models.Bank, error) {
+func (r BankRepositoryMock) GetById(id int) (*repositories.Bank, error) {
 	for _, bank := range r.banks {
 		if bank.Id == id {
 			return &bank, nil

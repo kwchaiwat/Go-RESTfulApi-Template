@@ -1,4 +1,4 @@
-package repositories
+package repository
 
 type Customer struct {
 	CustomerID  int    `db:"customer_id"`
@@ -6,7 +6,7 @@ type Customer struct {
 	DateOfBirth string `db:"date_of_birth"`
 	City        string `db:"city"`
 	Zipcode     string `db:"zipcode"`
-	Status      bool   `db:"status"`
+	Status      int    `db:"status"`
 }
 
 type CustomerRepository interface {

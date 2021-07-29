@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go-restful-api-template/handler"
 	"go-restful-api-template/logs"
-	"go-restful-api-template/repositories"
-	"go-restful-api-template/services"
+	"go-restful-api-template/repository"
+	"go-restful-api-template/service"
 	"net/http"
 	"strings"
 	"time"
@@ -22,15 +22,21 @@ func main() {
 	db := initDatabase()
 
 	// Plug Adapter
-	customerRepository := repositories.NewCustomerRepositoryImpl(db)
+	customerRepository := repository.NewCustomerRepositoryImpl(db)
 	// customerRepository := repositories.NewCustomerRepositoryMock() // Use Mock
-	customerService := services.NewCustomerService(customerRepository)
-	customerHandler := handler.NewCustomerHandler(&customerService)
+	customerService := service.NewCustomerService(customerRepository)
+	customerHandler := handler.NewCustomerHandler(customerService)
+
+	accountRepository := repository.NewAccountRepositoryImpl(db)
+	accountService := service.NewAccountService(accountRepository)
+	accountHandler := handler.NewAccountHandler(accountService)
 
 	// Router
 	router := mux.NewRouter()
 	router.HandleFunc("/customers", customerHandler.GetCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{Id:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
 
 	// ListenAndServe PORT 8000
 	logs.Info("Banking service started at port " + viper.GetString("app.port"))

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"go-restful-api-template/services"
+	"go-restful-api-template/service"
 	"net/http"
 	"strconv"
 
@@ -10,10 +10,10 @@ import (
 )
 
 type CustomerHandler struct {
-	customerService services.CustomerService
+	customerService service.CustomerService
 }
 
-func NewCustomerHandler(customerSrv services.CustomerService) CustomerHandler {
+func NewCustomerHandler(customerSrv service.CustomerService) CustomerHandler {
 	return CustomerHandler{customerService: customerSrv}
 }
 
@@ -23,13 +23,12 @@ func (h CustomerHandler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 		handlerError(w, err)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(customers)
 }
 
 func (h CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
-	customerID, _ := strconv.Atoi(mux.Vars(r)["Id"])
+	customerID, _ := strconv.Atoi(mux.Vars(r)["customerID"])
 	customer, err := h.customerService.GetCustomer(customerID)
 	if err != nil {
 		handlerError(w, err)

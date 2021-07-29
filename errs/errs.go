@@ -32,6 +32,13 @@ func NewBadRequestError() error {
 	}
 }
 
+func NewVaildationError(message string) error {
+	return AppError{
+		Code:    http.StatusUnprocessableEntity,
+		Message: message,
+	}
+}
+
 func NewUnauthorizedError() error {
 	return AppError{
 		Code:    http.StatusUnauthorized,

@@ -22,15 +22,15 @@ func main() {
 	db := initDatabase()
 
 	// Plug Adapter
-	bankRepository := repositories.NewBankRepositoryImpl(db)
-	// bankRepository := repositories.NewBankRepositoryMock() // Use Mock
-	bankService := services.NewBankService(bankRepository)
-	bankHandler := handler.NewBankHandler(&bankService)
+	customerRepository := repositories.NewCustomerRepositoryImpl(db)
+	// customerRepository := repositories.NewCustomerRepositoryMock() // Use Mock
+	customerService := services.NewCustomerService(customerRepository)
+	customerHandler := handler.NewCustomerHandler(&customerService)
 
 	// Router
 	router := mux.NewRouter()
-	router.HandleFunc("/banks", bankHandler.GetBanks).Methods(http.MethodGet)
-	router.HandleFunc("/banks/{bankId:[0-9]+}", bankHandler.GetBank).Methods(http.MethodGet)
+	router.HandleFunc("/customers", customerHandler.GetCustomers).Methods(http.MethodGet)
+	router.HandleFunc("/customers/{Id:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
 
 	// ListenAndServe PORT 8000
 	logs.Info("Banking service started at port " + viper.GetString("app.port"))

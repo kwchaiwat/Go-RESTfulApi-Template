@@ -2,7 +2,7 @@ package services
 
 import (
 	"database/sql"
-	"errors"
+	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
 	"go-restful-api-template/models"
 )
@@ -19,7 +19,7 @@ func (s *bankService) GetBanks() ([]models.Bank, error) {
 	banks, err := s.bankRepo.GetAll()
 	if err != nil {
 		logs.Error(err)
-		return nil, err
+		return nil, errs.NewUnexpectedError()
 	}
 	return banks, nil
 }
@@ -28,10 +28,10 @@ func (s *bankService) GetBank(id int) (*models.Bank, error) {
 	bank, err := s.bankRepo.GetById(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errors.New("bank not found")
+			return nil, errs.NewNotFoundError("bank not found")
 		}
 		logs.Error(err)
-		return nil, err
+		return nil, errs.NewUnexpectedError()
 	}
 	return bank, nil
 }

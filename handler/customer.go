@@ -29,8 +29,8 @@ func (h CustomerHandler) GetCustomers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
-	customerId, _ := strconv.Atoi(mux.Vars(r)["Id"])
-	customer, err := h.customerService.GetCustomer(customerId)
+	customerID, _ := strconv.Atoi(mux.Vars(r)["Id"])
+	customer, err := h.customerService.GetCustomer(customerID)
 	if err != nil {
 		handlerError(w, err)
 		return

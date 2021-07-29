@@ -25,7 +25,7 @@ func (r customerRepositoryImpl) GetAll() ([]Customer, error) {
 
 func (r customerRepositoryImpl) GetById(id int) (*Customer, error) {
 	customer := Customer{}
-	query := "SELECT * FROM customers WHERE id=?"
+	query := "SELECT * FROM customers WHERE customer_id=?"
 	err := r.db.Get(&customer, query, id)
 	if err != nil {
 		return nil, err

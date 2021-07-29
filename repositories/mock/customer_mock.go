@@ -11,10 +11,10 @@ type CustomerRepositoryMock struct {
 
 func NewCustomerRepositoryMock() CustomerRepositoryMock {
 	customers := []repositories.Customer{
-		{Id: 1001, AccountNumber: "Mock-1", Trust: 111.99, TransactionFee: 10},
-		{Id: 1002, AccountNumber: "Mock-2", Trust: 222.99, TransactionFee: 20},
-		{Id: 1003, AccountNumber: "Mock-3", Trust: 333.99, TransactionFee: 30},
-		{Id: 1004, AccountNumber: "Mock-4", Trust: 444.99, TransactionFee: 40},
+		{CustomerId: 1001, Name: "Mock-1", DateOfBirth: "2021-01-01 14:55:12", City: "Khonkaen"},
+		{CustomerId: 1002, Name: "Mock-2", DateOfBirth: "2021-02-02 14:55:12", City: "Bangkok"},
+		{CustomerId: 1003, Name: "Mock-3", DateOfBirth: "2021-03-03 14:55:12", City: "Ayuttaya"},
+		{CustomerId: 1004, Name: "Mock-4", DateOfBirth: "2021-04-04 14:55:12", City: "Lei"},
 	}
 
 	return CustomerRepositoryMock{customers: customers}
@@ -26,7 +26,7 @@ func (r CustomerRepositoryMock) GetAll() ([]repositories.Customer, error) {
 
 func (r CustomerRepositoryMock) GetById(id int) (*repositories.Customer, error) {
 	for _, customer := range r.customers {
-		if customer.Id == id {
+		if customer.CustomerId == id {
 			return &customer, nil
 		}
 	}

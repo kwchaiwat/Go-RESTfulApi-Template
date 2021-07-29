@@ -1,10 +1,12 @@
 package repositories
 
 type Customer struct {
-	Id             int     `db:"id"`
-	AccountNumber  string  `db:"account_number"`
-	Trust          float64 `db:"trust"`
-	TransactionFee int     `db:"transaction_fee"`
+	CustomerId  int    `db:"customer_id"`
+	Name        string `db:"name"`
+	DateOfBirth string `db:"date_of_birth"`
+	City        string `db:"city"`
+	Zipcode     string `db:"zipcode"`
+	Status      bool   `db:"status"`
 }
 
 type CustomerRepository interface {

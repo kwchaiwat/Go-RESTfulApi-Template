@@ -4,6 +4,7 @@ import (
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
 	"go-restful-api-template/repository"
+	"strings"
 	"time"
 )
 
@@ -16,6 +17,15 @@ func NewAccountService(accRepo repository.AccountRepository) AccountService {
 }
 
 func (s accountService) NewAccount(customerID int, request NewAccountRequest) (*AccountResponse, error) {
+
+	// Validate
+	if request.Amount < 5000 {
+		return nil, errs.NewVaildationError("amount at least 5,000")
+	}
+	if strings.ToLower(request.AccountType) != "saving" && strings.ToLower(request.AccountType) != "checking" {
+		return nil, errs.NewVaildationError("account type should be saving or checking")
+	}
+
 	account := repository.Account{
 		CustomerID:  customerID,
 		OpeningDate: time.Now().Format("2006-1-2 15:04:05"),

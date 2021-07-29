@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"go-restful-api-template/handler"
+	"go-restful-api-template/logs"
 	"go-restful-api-template/repositories"
 	"go-restful-api-template/services"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -33,7 +33,7 @@ func main() {
 	router.HandleFunc("/banks/{bankId:[0-9]+}", bankHandler.GetBank).Methods(http.MethodGet)
 
 	// ListenAndServe PORT 8000
-	log.Printf("Banking service started at port: %v", viper.GetInt("app.port"))
+	logs.Info("Banking service started at port " + viper.GetString("app.port"))
 	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)
 }
 

@@ -1,13 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
-	"go-restful-api-template/errs"
+	"fmt"
 	"go-restful-api-template/service"
-	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
 )
 
 type accountHandler struct {
@@ -18,40 +15,32 @@ func NewAccountHandler(accSrv service.AccountService) accountHandler {
 	return accountHandler{accSrv: accSrv}
 }
 
-func (h accountHandler) NewAccount(w http.ResponseWriter, r *http.Request) {
-
-	customerID, _ := strconv.Atoi(mux.Vars(r)["customerID"])
-
-	if r.Header.Get("content-type") != "application/json" {
-		handlerError(w, errs.NewVaildationError("request body incorrect format"))
-		return
-	}
-
-	request := service.NewAccountRequest{}
-	err := json.NewDecoder(r.Body).Decode(&request)
+func (h accountHandler) NewAccount(c *fiber.Ctx) error {
+	customerID, err := c.ParamsInt("customerID")
 	if err != nil {
-		handlerError(w, errs.NewVaildationError("request body incorrect format"))
-		return
+		return fiber.ErrBadRequest
 	}
-
-	res, err := h.accSrv.NewAccount(customerID, request)
+	account := service.NewAccountRequest{}
+	err = c.BodyParser(&account)
 	if err != nil {
-		handlerError(w, err)
-		return
+		return fiber.NewError(fiber.StatusBadRequest, "request body incorrect format")
 	}
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	res, err := h.accSrv.NewAccount(customerID, account)
+	if err != nil {
+		return err
+	}
+	return c.JSON(res)
 }
 
-func (h accountHandler) GetAccounts(w http.ResponseWriter, r *http.Request) {
-	customerID, _ := strconv.Atoi(mux.Vars(r)["customerID"])
+func (h accountHandler) GetAccounts(c *fiber.Ctx) error {
+	fmt.Printf("IsJson: %v\n", c.Is("json"))
+	customerID, err := c.ParamsInt("customerID")
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
 	res, err := h.accSrv.GetAccounts(customerID)
 	if err != nil {
-		handlerError(w, err)
-		return
+		return err
 	}
-
-	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	return c.JSON(res)
 }

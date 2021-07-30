@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
+	"fmt"
 	"go-restful-api-template/service"
-	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
 )
 
 type CustomerHandler struct {
@@ -17,24 +15,24 @@ func NewCustomerHandler(customerSrv service.CustomerService) CustomerHandler {
 	return CustomerHandler{customerService: customerSrv}
 }
 
-func (h CustomerHandler) GetCustomers(w http.ResponseWriter, r *http.Request) {
+func (h CustomerHandler) GetCustomers(c *fiber.Ctx) error {
+	fmt.Printf("IsJson: %v\n", c.Is("json"))
 	customers, err := h.customerService.GetCustomers()
 	if err != nil {
-		handlerError(w, err)
-		return
+		return err
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(customers)
+	return c.JSON(customers)
 }
 
-func (h CustomerHandler) GetCustomer(w http.ResponseWriter, r *http.Request) {
-	customerID, _ := strconv.Atoi(mux.Vars(r)["customerID"])
-	customer, err := h.customerService.GetCustomer(customerID)
+func (h CustomerHandler) GetCustomer(c *fiber.Ctx) error {
+	customerID, err := c.ParamsInt("customerID")
 	if err != nil {
-		handlerError(w, err)
-		return
+		return fiber.ErrBadRequest
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(customer)
+	customer, err := h.customerService.GetCustomer(customerID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(customer)
 }

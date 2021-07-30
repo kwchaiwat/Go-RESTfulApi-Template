@@ -6,12 +6,14 @@ import (
 	"go-restful-api-template/logs"
 	"go-restful-api-template/repository"
 	"go-restful-api-template/service"
-	"net/http"
 	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 )
@@ -31,16 +33,39 @@ func main() {
 	accountService := service.NewAccountService(accountRepository)
 	accountHandler := handler.NewAccountHandler(accountService)
 
-	// Router
-	router := mux.NewRouter()
-	router.HandleFunc("/customers", customerHandler.GetCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customerID:[0-9]+}", customerHandler.GetCustomer).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.GetAccounts).Methods(http.MethodGet)
-	router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
+	// router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
+
+	app := fiber.New()
+	app.Use(requestid.New())
+	app.Use(logger.New(logger.Config{TimeZone: "Asia/Bangkok"}))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: "*",
+		AllowHeaders: "*",
+	}))
+
+	app.Get("/customers", customerHandler.GetCustomers)
+	app.Get("/customers/:customerID", customerHandler.GetCustomer)
+	app.Get("/customers/:customerID/:accounts?", accountHandler.GetAccounts)
+	app.Post("/customers/:customerID/:accounts?", accountHandler.NewAccount)
+
+	//Environment
+	app.Get("/env", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"BaseURL":     c.BaseURL(),
+			"Hostname":    c.Hostname(),
+			"IP":          c.IP(),
+			"IPs":         c.IPs(),
+			"OriginalURL": c.OriginalURL(),
+			"Path":        c.Path(),
+			"Protocol":    c.Protocol(),
+			"Subdomains":  c.Subdomains(),
+		})
+	})
 
 	// ListenAndServe PORT 8000
 	logs.Info("Banking service started at port " + viper.GetString("app.port"))
-	http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("app.port")), router)
+	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
 }
 
 func initTimeZone() {

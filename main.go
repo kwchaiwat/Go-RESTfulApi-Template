@@ -29,7 +29,7 @@ func main() {
 		AllowHeaders: "*",
 	}))
 
-	v1 := app.Group("/v1", func(c *fiber.Ctx) error {
+	v1 := app.Group("/api/v1", func(c *fiber.Ctx) error {
 		c.Set("Version", "v1")
 		return c.Next()
 	})

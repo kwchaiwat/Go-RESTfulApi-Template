@@ -33,8 +33,6 @@ func main() {
 	accountService := service.NewAccountService(accountRepository)
 	accountHandler := handler.NewAccountHandler(accountService)
 
-	// router.HandleFunc("/customers/{customerID:[0-9]+}/accounts", accountHandler.NewAccount).Methods(http.MethodPost)
-
 	app := fiber.New()
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{TimeZone: "Asia/Bangkok"}))
@@ -44,10 +42,16 @@ func main() {
 		AllowHeaders: "*",
 	}))
 
-	app.Get("/customers", customerHandler.GetCustomers)
-	app.Get("/customers/:customerID", customerHandler.GetCustomer)
-	app.Get("/customers/:customerID/:accounts?", accountHandler.GetAccounts)
-	app.Post("/customers/:customerID/:accounts?", accountHandler.NewAccount)
+	v1 := app.Group("/v1", func(c *fiber.Ctx) error {
+		c.Set("Version", "v1")
+		return c.Next()
+	})
+
+	//Router
+	v1.Get("/customers", customerHandler.GetCustomers)
+	v1.Get("/customers/:customerID", customerHandler.GetCustomer)
+	v1.Get("/customers/:customerID/:accounts?", accountHandler.GetAccounts)
+	v1.Post("/customers/:customerID/:accounts?", accountHandler.NewAccount)
 
 	//Environment
 	app.Get("/env", func(c *fiber.Ctx) error {

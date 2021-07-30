@@ -8,16 +8,16 @@ import (
 )
 
 type CustomerHandler struct {
-	customerService service.CustomerService
+	customerSrv service.CustomerService
 }
 
 func NewCustomerHandler(customerSrv service.CustomerService) CustomerHandler {
-	return CustomerHandler{customerService: customerSrv}
+	return CustomerHandler{customerSrv: customerSrv}
 }
 
 func (h CustomerHandler) GetCustomers(c *fiber.Ctx) error {
 	fmt.Printf("IsJson: %v\n", c.Is("json"))
-	customers, err := h.customerService.GetCustomers()
+	customers, err := h.customerSrv.GetCustomers()
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (h CustomerHandler) GetCustomer(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	customer, err := h.customerService.GetCustomer(customerID)
+	customer, err := h.customerSrv.GetCustomer(customerID)
 	if err != nil {
 		return err
 	}

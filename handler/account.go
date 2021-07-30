@@ -7,15 +7,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type accountHandler struct {
+type AccountHandler struct {
 	accSrv service.AccountService
 }
 
-func NewAccountHandler(accSrv service.AccountService) accountHandler {
-	return accountHandler{accSrv: accSrv}
+func NewAccountHandler(accSrv service.AccountService) AccountHandler {
+	return AccountHandler{accSrv: accSrv}
 }
 
-func (h accountHandler) NewAccount(c *fiber.Ctx) error {
+func (h AccountHandler) NewAccount(c *fiber.Ctx) error {
 	customerID, err := c.ParamsInt("customerID")
 	if err != nil {
 		return fiber.ErrBadRequest
@@ -32,7 +32,7 @@ func (h accountHandler) NewAccount(c *fiber.Ctx) error {
 	return c.JSON(res)
 }
 
-func (h accountHandler) GetAccounts(c *fiber.Ctx) error {
+func (h AccountHandler) GetAccounts(c *fiber.Ctx) error {
 	fmt.Printf("IsJson: %v\n", c.Is("json"))
 	customerID, err := c.ParamsInt("customerID")
 	if err != nil {

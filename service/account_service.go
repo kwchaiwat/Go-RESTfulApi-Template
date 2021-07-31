@@ -61,6 +61,11 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	responses := []AccountResponse{}
 	for _, account := range accounts {
 		responses = append(responses, AccountResponse{
+			Customer: CustomerResponse{
+				ID:     account.Customer.ID,
+				Name:   account.Customer.Name,
+				Status: account.Customer.Status,
+			},
 			ID:          account.ID,
 			OpeningDate: account.OpeningDate,
 			AccountType: account.AccountType,

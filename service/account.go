@@ -10,11 +10,12 @@ type NewAccountRequest struct {
 }
 
 type AccountResponse struct {
-	ID          uint      `json:"id"`
-	OpeningDate time.Time `json:"opening_date"`
-	AccountType string    `json:"account_type"`
-	Amount      float64   `json:"amount"`
-	Status      int       `json:"status"`
+	Customer    CustomerResponse `json:"customer"`
+	ID          uint             `json:"id"`
+	OpeningDate time.Time        `json:"opening_date"`
+	AccountType string           `json:"account_type"`
+	Amount      float64          `json:"amount"`
+	Status      int              `json:"status"`
 }
 
 type AccountService interface {

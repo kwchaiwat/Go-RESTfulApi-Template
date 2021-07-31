@@ -5,6 +5,7 @@ import (
 	model "go-restful-api-template/models"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type accountRepositoryImpl struct {
@@ -27,7 +28,7 @@ func (r accountRepositoryImpl) Create(acc model.Account) (*model.Account, error)
 
 func (r accountRepositoryImpl) GetAll(customerID int) ([]model.Account, error) {
 	account := []model.Account{}
-	tx := r.db.Where("customer_id", customerID).Find(&account)
+	tx := r.db.Preload(clause.Associations).Where("customer_id", customerID).Find(&account)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

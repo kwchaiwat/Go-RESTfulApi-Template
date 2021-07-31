@@ -38,7 +38,7 @@ func (r accountRepositoryImpl) GetAll(customerID int) ([]model.Account, error) {
 
 func (r accountRepositoryImpl) GetById(id int) (*model.Account, error) {
 	acc := model.Account{}
-	tx := r.db.Preload(clause.Associations).Find(&acc, id)
+	tx := r.db.Preload(clause.Associations).First(&acc, id)
 	if tx.Error != nil {
 		logs.Error(tx.Error)
 		return nil, tx.Error
@@ -47,7 +47,7 @@ func (r accountRepositoryImpl) GetById(id int) (*model.Account, error) {
 }
 
 func (r accountRepositoryImpl) Update(accountID int, acc model.Account) (*model.Account, error) {
-	tx := r.db.Model(&model.Account{}).Where("id=@accountID", sql.Named("accountID", accountID)).Updates(acc)
+	tx := r.db.First(&acc, accountID).Where("id=@accountID", sql.Named("accountID", accountID)).Updates(acc)
 	if tx.Error != nil {
 		logs.Error(tx.Error)
 		return nil, tx.Error
@@ -56,7 +56,8 @@ func (r accountRepositoryImpl) Update(accountID int, acc model.Account) (*model.
 }
 
 func (r accountRepositoryImpl) Delete(accountID int) error {
-	tx := r.db.Delete(&model.Account{}, accountID)
+	acc := model.Account{}
+	tx := r.db.First(&acc, accountID).Delete(&acc, accountID)
 	if tx.Error != nil {
 		logs.Error(tx.Error)
 		return tx.Error

@@ -1,13 +1,15 @@
 package service
 
 import (
-	"database/sql"
+	"errors"
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
 	model "go-restful-api-template/models"
 	"go-restful-api-template/repository"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type NewAccountRequest struct {
@@ -23,6 +25,13 @@ type UpdateAccountRequest struct {
 }
 
 type AccountResponse struct {
+	ID          uint      `json:"id"`
+	OpeningDate time.Time `json:"opening_date"`
+	AccountType string    `json:"account_type"`
+	Amount      float64   `json:"amount"`
+	Status      int       `json:"status"`
+}
+type AccountCustResponse struct {
 	Customer    CustomerResponse `json:"customer"`
 	ID          uint             `json:"id"`
 	OpeningDate time.Time        `json:"opening_date"`
@@ -34,7 +43,7 @@ type AccountResponse struct {
 type AccountService interface {
 	NewAccount(int, NewAccountRequest) (*AccountResponse, error)
 	GetAccounts(id int) ([]AccountResponse, error)
-	GetAccount(id int) ([]AccountResponse, error)
+	GetAccount(id int) ([]AccountCustResponse, error)
 	UpdateAccount(int, UpdateAccountRequest) (*AccountResponse, error)
 	DeleteAccount(id int) error
 }
@@ -84,6 +93,9 @@ func (s accountService) NewAccount(customerID int, request NewAccountRequest) (*
 func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	accounts, err := s.accRepo.GetAll(customerID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errs.NewNotFoundError("account not found")
+		}
 		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
@@ -91,11 +103,6 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	responses := []AccountResponse{}
 	for _, account := range accounts {
 		responses = append(responses, AccountResponse{
-			Customer: CustomerResponse{
-				ID:     account.Customer.ID,
-				Name:   account.Customer.Name,
-				Status: account.Customer.Status,
-			},
 			ID:          account.ID,
 			OpeningDate: account.OpeningDate,
 			AccountType: account.AccountType,
@@ -107,17 +114,17 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	return responses, nil
 }
 
-func (s accountService) GetAccount(id int) ([]AccountResponse, error) {
+func (s accountService) GetAccount(id int) ([]AccountCustResponse, error) {
 	account, err := s.accRepo.GetById(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errs.NewNotFoundError("account not found")
 		}
 		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
-	response := []AccountResponse{}
-	response = append(response, AccountResponse{
+	response := []AccountCustResponse{}
+	response = append(response, AccountCustResponse{
 		Customer: CustomerResponse{
 			ID:     account.Customer.ID,
 			Name:   account.Customer.Name,
@@ -153,6 +160,9 @@ func (s accountService) UpdateAccount(accountID int, request UpdateAccountReques
 
 	newAcc, err := s.accRepo.Update(accountID, acc)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errs.NewNotFoundError("account not found")
+		}
 		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
@@ -171,6 +181,9 @@ func (s accountService) UpdateAccount(accountID int, request UpdateAccountReques
 func (s accountService) DeleteAccount(accountID int) error {
 	err := s.accRepo.Delete(accountID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errs.NewNotFoundError("account not found")
+		}
 		logs.Error(err)
 		return errs.NewUnexpectedError()
 	}

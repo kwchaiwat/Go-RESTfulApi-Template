@@ -45,6 +45,19 @@ func (h AccountHandler) GetAccounts(c *fiber.Ctx) error {
 	return c.JSON(res)
 }
 
+func (h AccountHandler) GetAccount(c *fiber.Ctx) error {
+	fmt.Printf("IsJson: %v\n", c.Is("json"))
+	accountID, err := c.ParamsInt("accountID")
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	res, err := h.accSrv.GetAccount(accountID)
+	if err != nil {
+		return err
+	}
+	return c.JSON(res)
+}
+
 func (h AccountHandler) UpdateAccount(c *fiber.Ctx) error {
 	accountID, err := c.ParamsInt("accountID")
 	if err != nil {
@@ -60,4 +73,16 @@ func (h AccountHandler) UpdateAccount(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(res)
+}
+
+func (h AccountHandler) DeleteAccount(c *fiber.Ctx) error {
+	accountID, err := c.ParamsInt("accountID")
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	err = h.accSrv.DeleteAccount(accountID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

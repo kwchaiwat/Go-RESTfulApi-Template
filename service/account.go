@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
 	model "go-restful-api-template/models"
@@ -33,7 +34,9 @@ type AccountResponse struct {
 type AccountService interface {
 	NewAccount(int, NewAccountRequest) (*AccountResponse, error)
 	GetAccounts(id int) ([]AccountResponse, error)
+	GetAccount(id int) ([]AccountResponse, error)
 	UpdateAccount(int, UpdateAccountRequest) (*AccountResponse, error)
+	DeleteAccount(id int) error
 }
 
 type accountService struct {
@@ -104,6 +107,32 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	return responses, nil
 }
 
+func (s accountService) GetAccount(id int) ([]AccountResponse, error) {
+	account, err := s.accRepo.GetById(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errs.NewNotFoundError("account not found")
+		}
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
+	}
+	response := []AccountResponse{}
+	response = append(response, AccountResponse{
+		Customer: CustomerResponse{
+			ID:     account.Customer.ID,
+			Name:   account.Customer.Name,
+			Status: account.Customer.Status,
+		},
+		ID:          account.ID,
+		OpeningDate: account.OpeningDate,
+		AccountType: account.AccountType,
+		Amount:      account.Amount,
+		Status:      account.Status,
+	})
+
+	return response, nil
+}
+
 func (s accountService) UpdateAccount(accountID int, request UpdateAccountRequest) (*AccountResponse, error) {
 
 	// Validate
@@ -137,4 +166,13 @@ func (s accountService) UpdateAccount(accountID int, request UpdateAccountReques
 	}
 
 	return &response, nil
+}
+
+func (s accountService) DeleteAccount(accountID int) error {
+	err := s.accRepo.Delete(accountID)
+	if err != nil {
+		logs.Error(err)
+		return errs.NewUnexpectedError()
+	}
+	return nil
 }

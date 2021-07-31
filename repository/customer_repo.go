@@ -1,21 +1,8 @@
 package repository
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
-
-type Customer struct {
-	gorm.Model
-	Name        string `gorm:"size:50;unique"`
-	DateOfBirth time.Time
-	City        string `gorm:"size:20"`
-	Zipcode     string `gorm:"size:20"`
-	Status      int
-}
+import model "go-restful-api-template/models"
 
 type CustomerRepository interface {
-	GetAll() ([]Customer, error)
-	GetById(int) (*Customer, error)
+	GetAll() ([]model.Customer, error)
+	GetById(int) (*model.Customer, error)
 }

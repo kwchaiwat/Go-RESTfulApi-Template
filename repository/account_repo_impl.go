@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	model "go-restful-api-template/models"
 
 	"gorm.io/gorm"
 )
@@ -14,7 +15,7 @@ func NewAccountRepositoryImpl(db *gorm.DB) accountRepositoryImpl {
 	return accountRepositoryImpl{db: db}
 }
 
-func (r accountRepositoryImpl) Create(acc Account) (*Account, error) {
+func (r accountRepositoryImpl) Create(acc model.Account) (*model.Account, error) {
 	tx := r.db.Create(&acc)
 	if tx.Error != nil {
 		fmt.Println(tx.Error)
@@ -24,8 +25,8 @@ func (r accountRepositoryImpl) Create(acc Account) (*Account, error) {
 	return &acc, nil
 }
 
-func (r accountRepositoryImpl) GetAll(customerID int) ([]Account, error) {
-	account := []Account{}
+func (r accountRepositoryImpl) GetAll(customerID int) ([]model.Account, error) {
+	account := []model.Account{}
 	tx := r.db.Where("customer_id", customerID).Find(&account)
 	if tx.Error != nil {
 		return nil, tx.Error

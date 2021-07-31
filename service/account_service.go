@@ -3,6 +3,7 @@ package service
 import (
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
+	model "go-restful-api-template/models"
 	"go-restful-api-template/repository"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func (s accountService) NewAccount(customerID int, request NewAccountRequest) (*
 		return nil, errs.NewVaildationError("account type should be saving or checking")
 	}
 
-	acc := repository.Account{
+	acc := model.Account{
 		CustomerID:  customerID,
 		OpeningDate: time.Now(),
 		AccountType: request.AccountType,

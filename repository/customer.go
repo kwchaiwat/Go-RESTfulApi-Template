@@ -28,7 +28,7 @@ func (r customerRepositoryImpl) GetAll() ([]model.Customer, error) {
 
 func (r customerRepositoryImpl) GetById(id int) (*model.Customer, error) {
 	customer := model.Customer{}
-	tx := r.db.Find(&customer, id)
+	tx := r.db.First(&customer, id)
 	if tx.Error != nil {
 		logs.Error(tx.Error)
 		return nil, tx.Error

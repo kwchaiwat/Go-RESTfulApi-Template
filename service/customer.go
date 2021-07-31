@@ -1,10 +1,12 @@
 package service
 
 import (
-	"database/sql"
+	"errors"
 	"go-restful-api-template/errs"
 	"go-restful-api-template/logs"
 	"go-restful-api-template/repository"
+
+	"gorm.io/gorm"
 )
 
 type CustomerResponse struct {
@@ -32,6 +34,10 @@ func (s customerService) GetCustomers() ([]CustomerResponse, error) {
 		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
+	if len(customers) == 0 {
+		return nil, errs.NewNotFoundError("customer is empty")
+	}
+
 	custResponses := []CustomerResponse{}
 	for _, customer := range customers {
 		custResponse := CustomerResponse{
@@ -48,7 +54,7 @@ func (s customerService) GetCustomers() ([]CustomerResponse, error) {
 func (s customerService) GetCustomer(id int) (*CustomerResponse, error) {
 	customer, err := s.customerRepo.GetById(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errs.NewNotFoundError("customer not found")
 		}
 		logs.Error(err)

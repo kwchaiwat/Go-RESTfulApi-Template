@@ -100,6 +100,10 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 		return nil, errs.NewUnexpectedError()
 	}
 
+	if len(accounts) == 0 {
+		return nil, errs.NewNotFoundError("accounts is empty")
+	}
+
 	responses := []AccountResponse{}
 	for _, account := range accounts {
 		responses = append(responses, AccountResponse{

@@ -47,7 +47,7 @@ func (r accountRepositoryImpl) GetById(id int) (*model.Account, error) {
 }
 
 func (r accountRepositoryImpl) Update(accountID int, acc model.Account) (*model.Account, error) {
-	tx := r.db.First(&acc, accountID).Where("id=@accountID", sql.Named("accountID", accountID)).Updates(acc)
+	tx := r.db.Model(&model.Account{}).First(&model.Account{}, accountID).Where("id=@accountID", sql.Named("accountID", accountID)).Updates(acc)
 	if tx.Error != nil {
 		logs.Error(tx.Error)
 		return nil, tx.Error

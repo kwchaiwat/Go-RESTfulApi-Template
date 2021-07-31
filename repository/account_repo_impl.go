@@ -1,44 +1,34 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type accountRepositoryImpl struct {
-	db *sqlx.DB
+	db *gorm.DB
 }
 
-func NewAccountRepositoryImpl(db *sqlx.DB) accountRepositoryImpl {
+func NewAccountRepositoryImpl(db *gorm.DB) accountRepositoryImpl {
 	return accountRepositoryImpl{db: db}
 }
 
 func (r accountRepositoryImpl) Create(acc Account) (*Account, error) {
-	query := "INSERT into accounts (customer_id, opening_date, account_type, amount, status) values (?,?,?,?,?)"
-	result, err := r.db.Exec(
-		query,
-		acc.CustomerID,
-		acc.OpeningDate,
-		acc.AccountType,
-		acc.Amount,
-		acc.Status,
-	)
-	if err != nil {
-		return nil, err
+	tx := r.db.Create(&acc)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-
-	acc.AccountID = int(id)
+	fmt.Println(acc)
 	return &acc, nil
 }
 
 func (r accountRepositoryImpl) GetAll(customerID int) ([]Account, error) {
-	query := "select * from accounts where customer_id=?"
-	accounts := []Account{}
-	err := r.db.Select(&accounts, query, customerID)
-	if err != nil {
-		return nil, err
+	account := []Account{}
+	tx := r.db.Where("customer_id", customerID).Find(&account)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
-	return accounts, nil
+	return account, nil
 }

@@ -1,12 +1,18 @@
 package repository
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type Customer struct {
-	CustomerID  int    `db:"customer_id"`
-	Name        string `db:"name"`
-	DateOfBirth string `db:"date_of_birth"`
-	City        string `db:"city"`
-	Zipcode     string `db:"zipcode"`
-	Status      int    `db:"status"`
+	gorm.Model
+	Name        string `gorm:"size:50;unique"`
+	DateOfBirth time.Time
+	City        string `gorm:"size:20"`
+	Zipcode     string `gorm:"size:20"`
+	Status      int
 }
 
 type CustomerRepository interface {

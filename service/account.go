@@ -1,16 +1,20 @@
 package service
 
+import (
+	"time"
+)
+
 type NewAccountRequest struct {
 	AccountType string  `json:"account_type"`
 	Amount      float64 `json:"amount"`
 }
 
 type AccountResponse struct {
-	AccountID   int     `json:"account_id"`
-	OpeningDate string  `json:"opening_date"`
-	AccountType string  `json:"account_type"`
-	Amount      float64 `json:"amount"`
-	Status      int     `json:"status"`
+	ID          uint      `json:"id"`
+	OpeningDate time.Time `json:"opening_date"`
+	AccountType string    `json:"account_type"`
+	Amount      float64   `json:"amount"`
+	Status      int       `json:"status"`
 }
 
 type AccountService interface {

@@ -24,9 +24,9 @@ func (s customerService) GetCustomers() ([]CustomerResponse, error) {
 	custResponses := []CustomerResponse{}
 	for _, customer := range customers {
 		custResponse := CustomerResponse{
-			CustomerID: customer.CustomerID,
-			Name:       customer.Name,
-			Status:     customer.Status,
+			ID:     customer.ID,
+			Name:   customer.Name,
+			Status: customer.Status,
 		}
 		custResponses = append(custResponses, custResponse)
 	}
@@ -45,9 +45,9 @@ func (s customerService) GetCustomer(id int) (*CustomerResponse, error) {
 	}
 
 	custResponse := CustomerResponse{
-		CustomerID: customer.CustomerID,
-		Name:       customer.Name,
-		Status:     customer.Status,
+		ID:     customer.ID,
+		Name:   customer.Name,
+		Status: customer.Status,
 	}
 
 	return &custResponse, nil

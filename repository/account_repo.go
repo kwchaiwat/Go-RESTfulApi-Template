@@ -1,12 +1,19 @@
 package repository
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type Account struct {
-	AccountID   int     `db:"account_id"`
-	CustomerID  int     `db:"customer_id"`
-	OpeningDate string  `db:"opening_date"`
-	AccountType string  `db:"account_type"`
-	Amount      float64 `db:"amount"`
-	Status      int     `db:"status"`
+	gorm.Model
+	OpeningDate time.Time
+	AccountType string `gorm:"size:20"`
+	Amount      float64
+	Status      int
+	Customer    Customer
+	CustomerID  int
 }
 
 type AccountRepository interface {

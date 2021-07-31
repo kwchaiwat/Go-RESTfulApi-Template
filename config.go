@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func initConfig() {
@@ -30,7 +33,18 @@ func initTimeZone() {
 	time.Local = ict
 }
 
-func initDatabase() *sqlx.DB {
+type SqlLogger struct {
+	logger.Interface
+}
+
+func (l SqlLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
+	sql, _ := fc()
+	fmt.Printf("%v\n=============================\n", sql)
+}
+
+var db *gorm.DB
+
+func initDatabase() *gorm.DB {
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		viper.GetString("db.username"),
 		viper.GetString("db.password"),
@@ -38,12 +52,14 @@ func initDatabase() *sqlx.DB {
 		viper.GetInt("db.port"),
 		viper.GetString("db.database"),
 	)
-	db, err := sqlx.Open(viper.GetString("db.driver"), dsn)
+	dial := mysql.Open(dsn)
+	var err error
+	db, err = gorm.Open(dial, &gorm.Config{
+		Logger: &SqlLogger{},
+		DryRun: false,
+	})
 	if err != nil {
-		fmt.Println("statuse: ", err)
+		panic(err)
 	}
-	db.SetConnMaxLifetime(3 * time.Minute)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
 	return db
 }

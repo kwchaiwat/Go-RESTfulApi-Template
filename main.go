@@ -16,6 +16,7 @@ func main() {
 	initConfig()
 	initTimeZone()
 	db := initDatabase()
+	// db.AutoMigrate(repository.Customer{}, repository.Account{})
 
 	// Plug Adapter
 	customerHandler := CustomerAdapter(db)
@@ -42,5 +43,5 @@ func main() {
 
 	// ListenAndServe PORT 8000
 	logs.Info("Banking service started at port " + viper.GetString("app.port"))
-	app.Listen(fmt.Sprintf(":%v", viper.GetInt("app.port")))
+	app.Listen(fmt.Sprintf("%v:%v", viper.GetString("app.host"), viper.GetInt("app.port")))
 }

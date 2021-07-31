@@ -26,22 +26,22 @@ func (s accountService) NewAccount(customerID int, request NewAccountRequest) (*
 		return nil, errs.NewVaildationError("account type should be saving or checking")
 	}
 
-	account := repository.Account{
+	acc := repository.Account{
 		CustomerID:  customerID,
-		OpeningDate: time.Now().Format("2006-1-2 15:04:05"),
+		OpeningDate: time.Now(),
 		AccountType: request.AccountType,
 		Amount:      request.Amount,
 		Status:      1,
 	}
 
-	newAcc, err := s.accRepo.Create(account)
+	newAcc, err := s.accRepo.Create(acc)
 	if err != nil {
 		logs.Error(err)
 		return nil, errs.NewUnexpectedError()
 	}
 
 	response := AccountResponse{
-		AccountID:   newAcc.AccountID,
+		ID:          newAcc.ID,
 		OpeningDate: newAcc.OpeningDate,
 		AccountType: newAcc.AccountType,
 		Amount:      newAcc.Amount,
@@ -60,7 +60,7 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 	responses := []AccountResponse{}
 	for _, account := range accounts {
 		responses = append(responses, AccountResponse{
-			AccountID:   account.AccountID,
+			ID:          account.ID,
 			OpeningDate: account.OpeningDate,
 			AccountType: account.AccountType,
 			Amount:      account.Amount,

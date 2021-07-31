@@ -76,3 +76,38 @@ func (s accountService) GetAccounts(customerID int) ([]AccountResponse, error) {
 
 	return responses, nil
 }
+
+func (s accountService) UpdateAccount(accountID int, request UpdateAccountRequest) (*AccountResponse, error) {
+
+	// Validate
+	if request.Amount < 5000 {
+		return nil, errs.NewVaildationError("amount at least 5,000")
+	}
+	if strings.ToLower(request.AccountType) != "saving" && strings.ToLower(request.AccountType) != "checking" {
+		return nil, errs.NewVaildationError("account type should be saving or checking")
+	}
+
+	acc := model.Account{
+		CustomerID:  request.CustomerID,
+		OpeningDate: time.Now(),
+		AccountType: request.AccountType,
+		Amount:      request.Amount,
+		Status:      1,
+	}
+
+	newAcc, err := s.accRepo.Update(accountID, acc)
+	if err != nil {
+		logs.Error(err)
+		return nil, errs.NewUnexpectedError()
+	}
+
+	response := AccountResponse{
+		ID:          newAcc.ID,
+		OpeningDate: newAcc.OpeningDate,
+		AccountType: newAcc.AccountType,
+		Amount:      newAcc.Amount,
+		Status:      newAcc.Status,
+	}
+
+	return &response, nil
+}

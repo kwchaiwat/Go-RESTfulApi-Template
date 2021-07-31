@@ -40,6 +40,7 @@ func main() {
 	v1.Get("/customers/:customerID", customerHandler.GetCustomer)
 	v1.Get("/customers/:customerID/:accounts?", accountHandler.GetAccounts)
 	v1.Post("/customers/:customerID/:accounts?", accountHandler.NewAccount)
+	v1.Put("/accounts/:accountID", accountHandler.UpdateAccount)
 
 	// ListenAndServe PORT 8000
 	logs.Info("Banking service started at port " + viper.GetString("app.port"))

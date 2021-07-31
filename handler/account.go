@@ -44,3 +44,20 @@ func (h AccountHandler) GetAccounts(c *fiber.Ctx) error {
 	}
 	return c.JSON(res)
 }
+
+func (h AccountHandler) UpdateAccount(c *fiber.Ctx) error {
+	accountID, err := c.ParamsInt("accountID")
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	account := service.UpdateAccountRequest{}
+	err = c.BodyParser(&account)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "request body incorrect format")
+	}
+	res, err := h.accSrv.UpdateAccount(accountID, account)
+	if err != nil {
+		return err
+	}
+	return c.JSON(res)
+}

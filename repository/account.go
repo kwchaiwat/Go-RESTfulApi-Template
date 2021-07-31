@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	model "go-restful-api-template/models"
 
@@ -33,4 +34,14 @@ func (r accountRepositoryImpl) GetAll(customerID int) ([]model.Account, error) {
 		return nil, tx.Error
 	}
 	return account, nil
+}
+
+func (r accountRepositoryImpl) Update(accountID int, acc model.Account) (*model.Account, error) {
+	tx := r.db.Model(&model.Account{}).Where("id=@accountID", sql.Named("accountID", accountID)).Updates(acc)
+	if tx.Error != nil {
+		fmt.Println(tx.Error)
+		return nil, tx.Error
+	}
+	fmt.Println(acc)
+	return &acc, nil
 }

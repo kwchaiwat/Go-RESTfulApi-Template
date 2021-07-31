@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"go-restful-api-template/logs"
 	model "go-restful-api-template/models"
 
 	"gorm.io/gorm"
@@ -19,6 +20,7 @@ func (r customerRepositoryImpl) GetAll() ([]model.Customer, error) {
 	customers := []model.Customer{}
 	tx := r.db.Find(&customers)
 	if tx.Error != nil {
+		logs.Error(tx.Error)
 		return nil, tx.Error
 	}
 	return customers, nil
@@ -28,6 +30,7 @@ func (r customerRepositoryImpl) GetById(id int) (*model.Customer, error) {
 	customer := model.Customer{}
 	tx := r.db.Find(&customer, id)
 	if tx.Error != nil {
+		logs.Error(tx.Error)
 		return nil, tx.Error
 	}
 	return &customer, nil
